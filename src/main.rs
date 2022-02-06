@@ -8,17 +8,23 @@ use anyhow::*;
 use v4l::video::Capture;
 use rayon::prelude::*;
 
-fn main() -> Result<()> {
+/// Read images from the first video device.
+fn read_images() -> Result<impl ParallelIterator<Item=Result<image::RgbImage>>> {
     let mut dev = Device::new(0).expect("Failed to open device");
     dev.set_format(
         &Format::new(1920, 1080, FourCC::new(b"MJPG"))
     )?;
+    dev.set_params(&Parameters{
+        interval: Fraction { numerator: 1, denominator: 5 },
+        ..dev.params()?
+    })?;
+    println!("intervals: {:?}", dev.enum_frameintervals(FourCC::new(b"MJPG"), 1280, 720)?);
 
 
     let mut stream =
         MmapStream::with_buffers(&mut dev, Type::VideoCapture, 4).expect("Failed to create buffer stream");
 
-    (0..250).into_iter()
+    let iter = (0..250).into_iter()
     .map(move |_| {
         let (buf, meta) = stream.next().unwrap();
         (buf.to_vec(), meta.clone())
@@ -34,7 +40,12 @@ fn main() -> Result<()> {
             meta.timestamp,
             im.dimensions()
         );
-        Ok(())
-    }).count();
+        Ok(im)
+    });
+    Ok(iter)
+}
+
+fn main() -> Result<()> {
+    read_images()?.count();
     Ok(())
 }

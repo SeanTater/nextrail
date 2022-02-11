@@ -6,10 +6,15 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-v4l = "*"
-anyhow = "*"
-jpeg-decoder = "*"
-turbojpeg = {version = "0.2", features = ["image"]}
-rayon = "*"
+env_logger = "0.9"
+log = "0.4"
+v4l = "0.12"
+anyhow = "1.0"
+jpeg-decoder = "0.2"
+#turbojpeg = {version = "0.2", features = ["image"]}
+rayon = "1.5"
 image = "*"
-libva-sys = "*"
+ndarray = "*"
+nshare = { version = "0.9", features = ["ndarray", "image"] }
+#libva-sys = "*"
+chrono = "*"

@@ -139,7 +139,7 @@ impl InterestModel {
 
 fn main() -> Result<()> {
     env_logger::init();
-    let mut model = InterestModel::new(1280, 720, 5);
+    let mut model = InterestModel::new(1920, 1080, 5);
     for im in read_images()? {
         let interest = model.estimate_interest(&im?);
         log::debug!("Interest: {}", interest.overall());
